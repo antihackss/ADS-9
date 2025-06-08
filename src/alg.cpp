@@ -7,110 +7,62 @@
 #include <stdexcept>
 #include  "tree.h"
 
-PMTree::PMTree(const std::vector<char>& in) {
-    if (in.empty()) {
-        root = nullptr;
-        totalPermutations = 0;
-        return;
-    }
-
-    totalPermutations = 1;
-    for (size_t i = 2; i <= in.size(); i++) {
-        totalPermutations *= i;
-    }
-
-    root = std::make_shared<Node>(in[0]);
-    std::vector<char> remaining = in;
-    remaining.erase(remaining.begin());
-    buildTree(root, remaining);
-}
-
-void PMTree::buildTree(std::shared_ptr<Node> node, const std::vector<char>& remaining) {
-    if (remaining.empty()) return;
-
-    for (char val : remaining) {
-        auto child = std::make_shared<Node>(val);
-        node->children.push_back(child);
-
-        std::vector<char> newRemaining;
-        for (char r : remaining) {
-            if (r != val) newRemaining.push_back(r);
-        }
-
-        buildTree(child, newRemaining);
-    }
-}
-
-std::vector<std::vector<char>> PMTree::getAllPerms() const {
-    std::vector<std::vector<char>> result;
-    if (!root) return result;
-
-    std::vector<char> current;
-    collectPermutations(root, current, result);
-    return result;
-}
-
-void PMTree::collectPermutations(std::shared_ptr<Node> node, 
-                                std::vector<char>& current, 
-                                std::vector<std::vector<char>>& result) const {
-    current.push_back(node->value);
+static void collectAll(PMTree::Node* node, std::vector<char>& path, std::vector<std::vector<char>>& result) {
+    if (!node) return;
+    if (node->value != '\0') path.push_back(node->value);
 
     if (node->children.empty()) {
-        result.push_back(current);
+        if (!path.empty())
+            result.push_back(path);
     } else {
-        for (const auto& child : node->children) {
-            collectPermutations(child, current, result);
-        }
+        for (auto& child : node->children)
+            collectAll(child.get(), path, result);
     }
 
-    current.pop_back();
+    if (node->value != '\0') path.pop_back();
 }
 
-std::vector<char> PMTree::getPermByNum(int num) const {
-    std::vector<char> result;
-    if (num < 1 || num > totalPermutations || !root) return result;
-
-    int remainingSteps = num - 1;
-    findPermutation(root, remainingSteps, result);
+std::vector<std::vector<char>> getAllPerms(PMTree& tree) {
+    std::vector<std::vector<char>> result;
+    std::vector<char> path;
+    collectAll(tree.root.get(), path, result);
     return result;
 }
 
-bool PMTree::findPermutation(std::shared_ptr<Node> node, 
-                            int& remainingSteps, 
-                            std::vector<char>& result) const {
-    result.push_back(node->value);
+std::vector<char> getPerm1(PMTree& tree, int num) {
+    auto perms = getAllPerms(tree);
+    if (num < 1 || num > static_cast<int>(perms.size()))
+        return {};
+    return perms[num - 1];
+}
 
-    if (node->children.empty()) {
-        return true;
+static int factorial(int n) {
+    int res = 1;
+    for (int i = 2; i <= n; ++i)
+        res *= i;
+    return res;
+}
+
+std::vector<char> getPerm2(PMTree& tree, int num) {
+    std::vector<char> symbols;
+    for (auto& child : tree.root->children)
+        symbols.push_back(child->value);
+
+    int n = static_cast<int>(symbols.size());
+    int total = factorial(n);
+    if (num < 1 || num > total)
+        return {};
+
+    --num;
+    std::vector<char> result;
+    std::vector<char> pool = symbols;
+
+    for (int i = n; i >= 1; --i) {
+        int f = factorial(i - 1);
+        int idx = num / f;
+        result.push_back(pool[idx]);
+        pool.erase(pool.begin() + idx);
+        num %= f;
     }
-
-    size_t childCount = node->children.size();
-    size_t subtreeSize = totalPermutations / (result.size() * childCount);
-
-    for (const auto& child : node->children) {
-        if (remainingSteps < subtreeSize) {
-            return findPermutation(child, remainingSteps, result);
-        }
-        remainingSteps -= subtreeSize;
-    }
-
-    return false;
-}
-
-size_t PMTree::getTotalPermutations() const {
-    return totalPermutations;
-}
-
-std::vector<std::vector<char>> getAllPerms(const PMTree& tree) {
-    return tree.getAllPerms();
-}
-
-std::vector<char> getPerm1(const PMTree& tree, int num) {
-    auto allPerms = tree.getAllPerms();
-    if (num < 1 || num > allPerms.size()) return {};
-    return allPerms[num - 1];
-}
-
-std::vector<char> getPerm2(const PMTree& tree, int num) {
-    return tree.getPermByNum(num);
+    return result;
 }
