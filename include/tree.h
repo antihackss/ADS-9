@@ -6,32 +6,35 @@
 #include <memory>
 
 class PMTree {
-public:
-    explicit PMTree(const std::vector<char>& elements);
-    
-    std::vector<std::vector<char>> getAllPerms() const;
-    std::vector<char> getPermByNum(int num) const;
-    size_t getTotalPermutations() const;
-
-private:
+ public:
     struct Node {
         char value;
-        std::vector<std::shared_ptr<Node>> children;
-        Node(char val) : value(val) {}
+        std::vector<std::unique_ptr<Node>> children;
+        Node(char v) : value(v) {}
     };
-    
-    std::shared_ptr<Node> root;
-    size_t totalPermutations;
-    
-    void buildTree(std::shared_ptr<Node> node, const std::vector<char>& remaining);
-    void collectPermutations(std::shared_ptr<Node> node, std::vector<char>& current, 
-                           std::vector<std::vector<char>>& result) const;
-    bool findPermutation(std::shared_ptr<Node> node, int& remainingSteps, 
-                        std::vector<char>& result) const;
+    std::unique_ptr<Node> root;
+
+    explicit PMTree(const std::vector<char>& symbols) {
+        root = std::make_unique<Node>('\0');
+        buildTree(root.get(), symbols);
+    }
+
+ private:
+    void buildTree(Node* parent, const std::vector<char>& symbols) {
+        if (symbols.empty()) return;
+        for (size_t i = 0; i < symbols.size(); ++i) {
+            parent->children.emplace_back(new Node(symbols[i]));
+            std::vector<char> next_symbols;
+            for (size_t j = 0; j < symbols.size(); ++j) {
+                if (j != i) next_symbols.push_back(symbols[j]);
+            }
+            buildTree(parent->children.back().get(), next_symbols);
+        }
+    }
 };
 
-std::vector<std::vector<char>> getAllPerms(const PMTree& tree);
-std::vector<char> getPerm1(const PMTree& tree, int num);
-std::vector<char> getPerm2(const PMTree& tree, int num);
+std::vector<std::vector<char>> getAllPerms(PMTree& tree);
+std::vector<char> getPerm1(PMTree& tree, int num);
+std::vector<char> getPerm2(PMTree& tree, int num);
 
 #endif  // INCLUDE_TREE_H_
