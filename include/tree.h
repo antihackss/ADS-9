@@ -6,6 +6,12 @@
 #include <memory>
 
 class PMTree {
+public:
+    explicit PMTree(const std::vector<char>& in);
+    int getTotalPermutations() const { return totalPermutations; }
+    std::vector<std::vector<char>> getAllPerms() const;
+    std::vector<char> getPermByNum(int num) const;
+
 private:
     struct Node {
         char value;
@@ -18,19 +24,12 @@ private:
     std::vector<char> elements;
 
     void buildTree(std::shared_ptr<Node> parent, const std::vector<char>& remaining);
-
-public:
-    explicit PMTree(const std::vector<char>& in);
-    int getTotalPermutations() const { return totalPermutations; }
-    const std::vector<char>& getElements() const { return elements; }
-    std::shared_ptr<Node> getRoot() const { return root; }
-
-    void getAllPerms(std::vector<std::vector<char>>& result) const;
-    void getPermByNum(int num, std::vector<char>& result) const;
+    void collectPermutations(std::shared_ptr<Node> node, 
+                           std::vector<char>& current, 
+                           std::vector<std::vector<char>>& result) const;
+    bool findPermByNum(std::shared_ptr<Node> node, 
+                      int& remainingSteps, 
+                      std::vector<char>& result) const;
 };
-
-std::vector<std::vector<char>> getAllPerms(const PMTree& tree);
-std::vector<char> getPerm1(const PMTree& tree, int num);
-std::vector<char> getPerm2(const PMTree& tree, int num);
 
 #endif  // INCLUDE_TREE_H_
