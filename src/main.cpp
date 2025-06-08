@@ -1,5 +1,4 @@
 // Copyright 2022 NNTU-CS
-#include "tree.h"
 #include <algorithm>
 #include <chrono>
 #include <fstream>
@@ -8,6 +7,7 @@
 #include <random>
 #include <sstream>
 #include <vector>
+#include "tree.h"
 
 int main() {
     std::vector<char> in = {'1', '2', '3'};
