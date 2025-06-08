@@ -38,12 +38,15 @@ int main() {
 
     for (int n = 1; n <= 8; ++n) {
         std::vector<char> symbols(n);
-        for (int i = 0; i < n; ++i)
+        for (int i = 0; i < n; ++i) {
             symbols[i] = 'a' + i;
+        }
 
         PMTree tree(symbols);
         int total = 1;
-        for (int i = 2; i <= n; ++i) total *= i;
+        for (int i = 2; i <= n; ++i) {
+            total *= i;
+        }
         std::uniform_int_distribution<> dis(1, total);
 
         int num = dis(gen);
@@ -56,11 +59,15 @@ int main() {
         auto perm2 = getPerm2(tree, num);
         auto t4 = std::chrono::high_resolution_clock::now();
 
-        double dt_all = std::chrono::duration<double, std::milli>(t2 - t1).count();
-        double dt_perm1 = std::chrono::duration<double, std::milli>(t3 - t2).count();
-        double dt_perm2 = std::chrono::duration<double, std::milli>(t4 - t3).count();
+        double dt_all = std::chrono::duration<double, std::milli>(
+            t2 - t1).count();
+        double dt_perm1 = std::chrono::duration<double, std::milli>(
+            t3 - t2).count();
+        double dt_perm2 = std::chrono::duration<double, std::milli>(
+            t4 - t3).count();
 
-        fout << n << "," << dt_all << "," << dt_perm1 << "," << dt_perm2 << "\n";
+        fout << n << "," << dt_all << "," << dt_perm1 << "," 
+             << dt_perm2 << "\n";
         std::cout << "n=" << n << " done\n";
     }
     fout.close();
