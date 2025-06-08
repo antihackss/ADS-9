@@ -66,7 +66,7 @@ int main() {
         double dt_perm2 = std::chrono::duration<double, std::milli>(
             t4 - t3).count();
 
-        fout << n << "," << dt_all << "," << dt_perm1 << "," 
+        fout << n << "," << dt_all << "," << dt_perm1 << ","
              << dt_perm2 << "\n";
         std::cout << "n=" << n << " done\n";
     }
