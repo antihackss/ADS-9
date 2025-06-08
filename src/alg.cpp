@@ -1,12 +1,12 @@
 // Copyright 2022 NNTU-CS
-#include  <iostream>
-#include  <fstream>
-#include  <locale>
-#include  <cstdlib>
 #include <algorithm>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <locale>
 #include <stdexcept>
-#include  "tree.h"
 #include <vector>
+#include "tree.h"
 
 static void collectAll(PMTree::Node* node,
                       std::vector<char>& path,
