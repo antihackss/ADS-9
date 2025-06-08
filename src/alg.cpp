@@ -6,8 +6,11 @@
 #include <algorithm>
 #include <stdexcept>
 #include  "tree.h"
+#include <vector>
 
-static void collectAll(PMTree::Node* node, std::vector<char>& path, std::vector<std::vector<char>>& result) {
+static void collectAll(PMTree::Node* node,
+                      std::vector<char>& path,
+                      std::vector<std::vector<char>>& result) {
     if (!node) return;
     if (node->value != '\0') path.push_back(node->value);
 
