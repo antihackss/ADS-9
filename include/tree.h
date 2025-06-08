@@ -6,7 +6,7 @@
 #include <vector>
 
 class PMTree {
-public:
+ public:
   struct Node {
     char value;
     std::vector<std::unique_ptr<Node>> children;
@@ -19,7 +19,7 @@ public:
     buildTree(root.get(), symbols);
   }
 
-private:
+ private:
   void buildTree(Node* parent, const std::vector<char>& symbols) {
     if (symbols.empty()) return;
     for (size_t i = 0; i < symbols.size(); ++i) {
@@ -36,5 +36,7 @@ private:
 std::vector<std::vector<char>> getAllPerms(PMTree& tree);
 std::vector<char> getPerm1(PMTree& tree, int num);
 std::vector<char> getPerm2(PMTree& tree, int num);
+
+#endif  // INCLUDE_TREE_H_
 
 #endif  // INCLUDE_TREE_H_
