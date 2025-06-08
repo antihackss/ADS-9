@@ -15,8 +15,7 @@ static void collectAll(PMTree::Node* node,
     if (node->value != '\0') path.push_back(node->value);
 
     if (node->children.empty()) {
-        if (!path.empty())
-            result.push_back(path);
+        if (!path.empty()) result.push_back(path);
     } else {
         for (auto& child : node->children)
             collectAll(child.get(), path, result);
