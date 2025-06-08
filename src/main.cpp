@@ -7,36 +7,64 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
-
-void printPermutation(const std::vector<char>& perm) {
-    for (char c : perm) {
-        std::cout << c;
-    }
-    std::cout << std::endl;
-}
+#include <vector>
 
 int main() {
-    std::vector<char> elements = {'1', '2', '3'};
-    PMTree tree(elements);
+    std::vector<char> in = {'1', '2', '3'};
+    PMTree tree(in);
 
-    std::cout << "All permutations:" << std::endl;
-    auto allPerms = getAllPerms(tree);
-    for (const auto& perm : allPerms) {
-        printPermutation(perm);
+    auto perms = getAllPerms(tree);
+    std::cout << "Все перестановки:\n";
+    for (const auto& perm : perms) {
+        for (char c : perm) std::cout << c;
+        std::cout << '\n';
     }
 
-    std::cout << "\nTest cases:" << std::endl;
-    std::cout << "Permutation 1: ";
-    printPermutation(getPerm1(tree, 1));
+    std::cout << "Перестановка №2 (getPerm1): ";
+    auto p1 = getPerm1(tree, 2);
+    for (char c : p1) std::cout << c;
+    std::cout << '\n';
 
-    std::cout << "Permutation 2: ";
-    printPermutation(getPerm2(tree, 2));
+    std::cout << "Перестановка №2 (getPerm2): ";
+    auto p2 = getPerm2(tree, 2);
+    for (char c : p2) std::cout << c;
+    std::cout << '\n';
 
-    std::cout << "Permutation 6: ";
-    printPermutation(getPerm1(tree, 6));
+    std::ofstream fout("result/times.csv");
+    fout << "n,all,perm1,perm2\n";
 
-    std::cout << "Permutation 8: ";
-    printPermutation(getPerm2(tree, 8));
+    std::random_device rd;
+    std::mt19937 gen(rd());
 
+    for (int n = 1; n <= 8; ++n) {
+        std::vector<char> symbols(n);
+        for (int i = 0; i < n; ++i)
+            symbols[i] = 'a' + i;
+
+        PMTree tree(symbols);
+        int total = 1;
+        for (int i = 2; i <= n; ++i) total *= i;
+        std::uniform_int_distribution<> dis(1, total);
+
+        int num = dis(gen);
+
+        auto t1 = std::chrono::high_resolution_clock::now();
+        auto all = getAllPerms(tree);
+        auto t2 = std::chrono::high_resolution_clock::now();
+        auto perm1 = getPerm1(tree, num);
+        auto t3 = std::chrono::high_resolution_clock::now();
+        auto perm2 = getPerm2(tree, num);
+        auto t4 = std::chrono::high_resolution_clock::now();
+
+        double dt_all = std::chrono::duration<double, std::milli>(t2 - t1).count();
+        double dt_perm1 = std::chrono::duration<double, std::milli>(t3 - t2).count();
+        double dt_perm2 = std::chrono::duration<double, std::milli>(t4 - t3).count();
+
+        fout << n << "," << dt_all << "," << dt_perm1 << "," << dt_perm2 << "\n";
+        std::cout << "n=" << n << " done\n";
+    }
+    fout.close();
+
+    std::cout << "Эксперимент завершён. Данные в result/times.csv\n";
     return 0;
 }
