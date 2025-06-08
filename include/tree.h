@@ -4,7 +4,6 @@
 
 #include <vector>
 #include <memory>
-#include <string>
 
 class PMTree {
 public:
@@ -12,9 +11,7 @@ public:
     
     std::vector<std::vector<char>> getAllPerms() const;
     std::vector<char> getPermByNum(int num) const;
-    
-    std::vector<std::vector<char>> getAllPermsHelper() const;
-    std::vector<char> getPermByNumHelper(int num) const;
+    size_t getTotalPermutations() const;
 
 private:
     struct Node {
@@ -27,8 +24,10 @@ private:
     size_t totalPermutations;
     
     void buildTree(std::shared_ptr<Node> node, const std::vector<char>& remaining);
-    void getAllPerms(std::shared_ptr<Node> node, std::vector<char>& current, std::vector<std::vector<char>>& result) const;
-    void getPermByNum(std::shared_ptr<Node> node, int& remainingSteps, std::vector<char>& result) const;
+    void collectPermutations(std::shared_ptr<Node> node, std::vector<char>& current, 
+                           std::vector<std::vector<char>>& result) const;
+    bool findPermutation(std::shared_ptr<Node> node, int& remainingSteps, 
+                        std::vector<char>& result) const;
 };
 
 std::vector<std::vector<char>> getAllPerms(const PMTree& tree);
