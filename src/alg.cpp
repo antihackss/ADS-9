@@ -34,8 +34,13 @@ void PMTree::buildTree(std::shared_ptr<Node> parent, const std::vector<char>& re
     }
 }
 
-void PMTree::getAllPermsHelper(std::shared_ptr<Node> node, std::vector<char>& current, 
-                             std::vector<std::vector<char>>& result) const {
+void PMTree::getAllPerms(std::vector<std::vector<char>>& result) const {
+    std::vector<char> current;
+    getAllPerms(root, current, result);
+}
+
+void PMTree::getAllPerms(std::shared_ptr<Node> node, std::vector<char>& current, 
+                        std::vector<std::vector<char>>& result) const {
     if (node->value != '\0') {
         current.push_back(node->value);
     }
@@ -44,7 +49,7 @@ void PMTree::getAllPermsHelper(std::shared_ptr<Node> node, std::vector<char>& cu
         result.push_back(current);
     } else {
         for (const auto& child : node->children) {
-            getAllPermsHelper(child, current, result);
+            getAllPerms(child, current, result);
         }
     }
 
@@ -53,8 +58,15 @@ void PMTree::getAllPermsHelper(std::shared_ptr<Node> node, std::vector<char>& cu
     }
 }
 
-void PMTree::getPermByNumHelper(std::shared_ptr<Node> node, int& remainingSteps, 
-                              std::vector<char>& result) const {
+void PMTree::getPermByNum(int num, std::vector<char>& result) const {
+    if (num < 1 || num > totalPermutations) return;
+    
+    int remainingSteps = num;
+    getPermByNum(root, remainingSteps, result);
+}
+
+void PMTree::getPermByNum(std::shared_ptr<Node> node, int& remainingSteps, 
+                         std::vector<char>& result) const {
     if (node->value != '\0') {
         result.push_back(node->value);
     }
@@ -64,7 +76,7 @@ void PMTree::getPermByNumHelper(std::shared_ptr<Node> node, int& remainingSteps,
     } else {
         for (const auto& child : node->children) {
             if (remainingSteps <= 0) break;
-            getPermByNumHelper(child, remainingSteps, result);
+            getPermByNum(child, remainingSteps, result);
         }
     }
 
@@ -77,8 +89,7 @@ std::vector<std::vector<char>> getAllPerms(const PMTree& tree) {
     std::vector<std::vector<char>> result;
     if (tree.getRoot() == nullptr) return result;
 
-    std::vector<char> current;
-    tree.getAllPermsHelper(tree.getRoot(), current, result);
+    tree.getAllPerms(result);
     return result;
 }
 
@@ -92,13 +103,7 @@ std::vector<char> getPerm1(const PMTree& tree, int num) {
 }
 
 std::vector<char> getPerm2(const PMTree& tree, int num) {
-    if (num < 1 || num > tree.getTotalPermutations()) {
-        return {};
-    }
-
     std::vector<char> result;
-    int remainingSteps = num;
-    tree.getPermByNumHelper(tree.getRoot(), remainingSteps, result);
+    tree.getPermByNum(num, result);
     return result;
 }
-
